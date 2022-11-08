@@ -1,9 +1,17 @@
 class Solution {
     public String makeGood(String s) {
-        for (int i = 0; i < s.length() - 1; i++) {
-            if (Math.abs(s.charAt(i) - s.charAt(i + 1)) == 32)  
-                return makeGood(s.substring(0, i) + s.substring(i + 2));
+        Stack<Character> stack = new Stack<>();
+        
+        for (char currChar : s.toCharArray()) {
+            if (!stack.isEmpty() && Math.abs(stack.lastElement() - currChar) == 32) 
+                stack.pop();
+            else
+                stack.add(currChar);
         }
-        return s;
+        
+        StringBuilder ans = new StringBuilder();
+        for (char currChar : stack) 
+            ans.append(currChar);
+        return ans.toString();
     }
 }
