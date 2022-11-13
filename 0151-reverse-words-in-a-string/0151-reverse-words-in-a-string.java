@@ -1,30 +1,10 @@
 class Solution {
     public String reverseWords(String s) {
-        String res = "";
-        int i = 0, N = s.length();
-        while (i < N) {
-            while (i < N  && s.charAt(i) == ' ') { 
-                i++;
-            }
-            
-            if (i >= N) break;
-            
-            int j = i + 1;
-            
-            while (j < N && s.charAt(j) != ' ') { 
-                j++;
-            }
-            
-            String sub = s.substring(i, j);
-            
-            if (res.length() == 0) {
-                res = sub;
-            }
-            else {
-                res = sub + " " + res;
-            }
-            i = j + 1;
+        String[] parts = s.trim().split("\\s+");
+        String out = "";
+        for (int i = parts.length - 1; i > 0; i--) {
+            out += parts[i] + " ";
         }
-        return res;
+        return out + parts[0];
     }
 }
