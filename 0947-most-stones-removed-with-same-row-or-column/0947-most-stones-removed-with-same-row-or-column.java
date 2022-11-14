@@ -1,28 +1,31 @@
 class Solution {
-    public static boolean[] visited;
-    
-    public static void dfs(int idx, int[][] stones) {
-        visited[idx] = true;
-        
-        for (int i = 0; i < stones.length; i++) {
-            if (visited[i])
-                continue;
-            if (stones[idx][0] == stones[i][0] || stones[idx][1] == stones[i][1])
-                dfs (i, stones);
+  public int removeStones(int[][] stones) {
+    int numOfIslands = 0;
+    List<Integer>[] graph = new List[stones.length];
+    Set<Integer> seen = new HashSet<>();
+
+    for (int i = 0; i < graph.length; ++i)
+      graph[i] = new ArrayList<>();
+
+    for (int i = 0; i < stones.length; ++i)
+      for (int j = i + 1; j < stones.length; ++j)
+        if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+          graph[i].add(j);
+          graph[j].add(i);
         }
-        return;
-    }
-    
-    public int removeStones(int[][] stones) {
-        visited = new boolean[stones.length];
-        Arrays.fill(visited, false);
-        int val = 0;
-        for (int i = 0; i < stones.length; i++) {
-            if (visited[i] == true)
-                continue;
-            val++;
-            dfs(i, stones);
-        }
-        return stones.length - val;
-    }
+
+    for (int i = 0; i < stones.length; ++i)
+      if (seen.add(i)) {
+        dfs(graph, i, seen);
+        ++numOfIslands;
+      }
+
+    return stones.length - numOfIslands;
+  }
+
+  private void dfs(List<Integer>[] graph, int u, Set<Integer> seen) {
+    for (final int v : graph[u])
+      if (seen.add(v))
+        dfs(graph, v, seen);
+  }
 }
