@@ -1,35 +1,30 @@
 class Solution {
     public int nearestExit(char[][] maze, int[] entrance) {
-        int r = maze.length;
-        int col = maze[0].length;
+        int rows = maze.length, cols = maze[0].length;
+        int[][] dirs = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        
+        int startRow = entrance[0], startCol = entrance[1];
+        maze[startRow][startCol] = '+';
+        
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{startRow, startCol, 0});
+        
+        while (!queue.isEmpty()) {
+            int[] currState = queue.poll();
+            int currRow = currState[0], currCol = currState[1], currDistance = currState[2];
 
-        Queue<int[]> que = new LinkedList<>();
-        que.offer(entrance);
-        maze[entrance[0]][entrance[1]] = '+';
+            for (int[] dir : dirs) {
+                int nextRow = currRow + dir[0], nextCol = currCol + dir[1];
 
-        int[][] dirs = new int[][] {{0,1},{0,-1},{1,0},{-1,0}};
-
-        int step = 0;
-        int x, y;
-        while (!que.isEmpty()) {
-            step++;
-
-            int n = que.size();
-            for (int i = 0; i < n; i++) {
-                int[] cur = que.poll();
-
-                for (int[] dir : dirs) {
-                    x = cur[0] + dir[0];
-                    y = cur[1] + dir[1];
-
-                    if (x < 0 || x >= r || y < 0 || y >= col) continue;
-                    if (maze[x][y] == '+') continue;
-
-                    if (x == 0 || x == r - 1 || y == 0 || y == col - 1) return step;
-
-                    maze[x][y] = '+';
-                    que.offer(new int[]{x, y});
-                }
+                if (0 <= nextRow && nextRow < rows && 0 <= nextCol && nextCol < cols
+                   && maze[nextRow][nextCol] == '.') {
+                    
+                    if (nextRow == 0 || nextRow == rows - 1 || nextCol == 0 || nextCol == cols - 1)
+                        return currDistance + 1;
+                    
+                    maze[nextRow][nextCol] = '+';
+                    queue.offer(new int[]{nextRow, nextCol, currDistance + 1});
+                }  
             }
         }
         return -1;
