@@ -1,40 +1,28 @@
 class Solution {
-    public boolean exist(char[][] board, String word) {
-    if (board == null || word == null) return false;
-    if (word.length() == 0) return true;
-    if (board.length == 0) return false;
-    int rows = board.length;
-    int cols = board[0].length;
-    for (int r = 0; r < rows; r++) {
-      for (int c = 0; c < cols; c++) {
-        // scan board, start with word first character 
-        if (board[r][c] == word.charAt(0)) {
-          if (helper(board, word, r, c, 0)) {
-            return true;
-          }
+public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0 || word == null || word.equals("")) {
+            return false;
         }
-      }
+        for (int i = 0; i < board.length; i ++) {
+            for (int j = 0; j < board[0].length; j ++) {
+                if (search(board, word, i, j, 0) == true) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
-    return false;
-  }
-  
-  private boolean helper(char[][] board, String word, int r, int c, int start) {
-    // already match word all characters, return true
-    if (start == word.length()) return true;
-    if (!isValid(board, r, c) ||
-        board[r][c] != word.charAt(start)) return false;
-    // mark visited
-    board[r][c] = '*';
-    boolean res = helper(board, word, r + 1, c, start + 1)
-        ||  helper(board, word, r, c + 1, start + 1)
-        ||  helper(board, word, r - 1, c, start + 1)
-        ||  helper(board, word, r, c - 1, start + 1);
-    // backtracking to start position
-    board[r][c] = word.charAt(start);
-    return res;
-  }
-  
-  private boolean isValid(char[][] board, int r, int c) {
-    return r >= 0 && r < board.length && c >= 0 && c < board[0].length;
-  }
+    private boolean search(char[][] board, String word, int i, int j, int matched) {
+        if (matched == word.length()) {
+            return true;
+        }
+        if (i < 0 || j < 0 || i >= board.length || j >= board[0].length || board[i][j] != word.charAt(matched)) {
+            return false;
+        }
+        board[i][j] = '#';
+        boolean result = search(board, word, i - 1, j, matched + 1) || search(board, word, i, j - 1, matched + 1) || search(board, word, i + 1, j, matched + 1) ||  search(board, word, i, j + 1, matched + 1);
+        board[i][j] = word.charAt(matched);
+        return result;
+
+    }
 }
