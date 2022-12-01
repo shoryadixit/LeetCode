@@ -1,11 +1,12 @@
 class Solution {
-    public boolean halvesAreAlike(String s) {
-        var vowels = Set.of('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U');
-        int a = 0, b = 0;
-        for (int i = 0, j = s.length() - 1; i < j; ++i, --j) {
-            a += vowels.contains(s.charAt(i)) ? 1 : 0;
-            b += vowels.contains(s.charAt(j)) ? 1 : 0;
+    String vowels = "aeiouAEIOU";
+    
+    public boolean halvesAreAlike(String S) {
+        int mid = S.length() / 2, ans = 0;
+        for (int i = 0, j = mid; i < mid; i++, j++) {
+            if (vowels.indexOf(S.charAt(i)) >= 0) ans++;
+            if (vowels.indexOf(S.charAt(j)) >= 0) ans--;
         }
-        return a == b;
+        return ans == 0;
     }
 }
