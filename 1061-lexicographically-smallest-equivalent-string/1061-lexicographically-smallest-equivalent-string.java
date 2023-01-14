@@ -1,47 +1,58 @@
 class Solution {
-    int representative[] = new int[26];
+    int minChar;
 
-    // Returns the root representative of the component.
-    int find(int x) {
-        if (representative[x] == x) {
-            return x;
-        }
+    void DFS(int src, Integer[][] adjMatrix, Integer visited[], List<Integer> component) {
+        // Mark the character as visited.
+        visited[src] = 1;
+        // Add it to the list.
+        component.add(src);
+        // Update the minimum character in the component.
+        minChar = Math.min(minChar, src);
 
-        return representative[x] = find(representative[x]);
-    }
-
-    // Perform union if x and y aren't in the same component.
-    void performUnion(int x, int y) {
-        x = find(x);
-        y = find(y);
-
-        if (x == y) {
-            return;
-        }
-
-        // Make the smaller character representative.
-        if (x < y) {
-            representative[y] = x;
-        } else {
-            representative[x] = y;
+        for (int i = 0; i < 26; i++) {
+            // Perform DFS if the edge exists and the node isn't visited yet.
+            if (adjMatrix[src][i] != null && visited[i] == null) {
+                DFS(i, adjMatrix, visited, component);
+            }
         }
     }
 
     public String smallestEquivalentString(String s1, String s2, String baseStr) {
-        // Make each character representative of itself.
-        for (int i = 0; i < 26; i++) {
-            representative[i] = i;
+        // Adjacency matrix to store edges.
+        Integer adjMatrix[][] = new Integer[26][26];
+        for (int i = 0; i < s1.length(); i++) {
+            adjMatrix[s1.charAt(i) - 'a'][s2.charAt(i) - 'a'] = 1;
+            adjMatrix[s2.charAt(i) - 'a'][s1.charAt(i) - 'a'] = 1;
         }
 
-        // Perform union merge for all the edges.
-        for (int i = 0; i < s1.length(); i++) {
-            performUnion(s1.charAt(i) - 'a', s2.charAt(i) - 'a');
+        // Array to store the final character mappings.
+        int mappingChar[] = new int[26];
+        for (int i = 0; i < 26; i++) {
+            mappingChar[i] = i;
+        }
+
+        // Array to keep visited nodes during DFS.
+        Integer visited[] = new Integer[26];
+        for (int c = 0; c < 26; c++) {
+            if (visited[c] == null) {
+                // Store the characters in the current component.
+                List<Integer> component = new ArrayList<>();
+                // Variable to store the minimum character in the component.
+                minChar = 27;
+
+                DFS(c, adjMatrix, visited, component);
+
+                // Map the characters in the component to the minimum character.
+                for (int vertex : component) {
+                    mappingChar[vertex] = minChar;
+                }
+            }
         }
 
         String ans = "";
-        // Create the answer string with final mappings.
+        // Create the answer string.
         for (char c : baseStr.toCharArray()) {
-            ans += (char)(find(c - 'a') + 'a');
+            ans += (char)(mappingChar[c - 'a'] + 'a');
         }
 
         return ans;
