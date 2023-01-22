@@ -4,10 +4,14 @@ class Solution {
         int cows = 0;
         int[] numbers = new int[10];
         for (int i = 0; i<secret.length(); i++) {
-            if (secret.charAt(i) == guess.charAt(i)) bulls++;
+            int s = Character.getNumericValue(secret.charAt(i));
+            int g = Character.getNumericValue(guess.charAt(i));
+            if (s == g) bulls++;
             else {
-                if (numbers[secret.charAt(i)-'0']++ < 0) cows++;
-                if (numbers[guess.charAt(i)-'0']-- > 0) cows++;
+                if (numbers[s] < 0) cows++;
+                if (numbers[g] > 0) cows++;
+                numbers[s] ++;
+                numbers[g] --;
             }
         }
         return bulls + "A" + cows + "B";
