@@ -1,40 +1,42 @@
 class Solution {
-    public int bestTeamScore(int[] scores, int[] ages) {
-        final int n = ages.length;
-        int[][] ageScorePair = new int[n][2];
+    private int findMaxScore(int[][] ageScorePair) {
+        int n = ageScorePair.length;
+        int answer = 0;
+
+        int[] dp = new int[n];
+        // Initially, the maximum score for each player will be equal to the individual scores.
+        for (int i = 0; i < n; i++) {
+            dp[i] = ageScorePair[i][1];
+            answer = Math.max(answer, dp[i]);
+        }
+
 
         for (int i = 0; i < n; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                // If the players j and i could be in the same team.
+                if (ageScorePair[i][1] >= ageScorePair[j][1]) {
+                    // Update the maximum score for the ith player.
+                    dp[i] = Math.max(dp[i], ageScorePair[i][1] + dp[j]);
+                }
+            }
+            // Maximum score among all the players.
+            answer = Math.max(answer, dp[i]);
+        }
+
+        return answer;
+    }
+
+    public int bestTeamScore(int[] scores, int[] ages) {
+        int N = ages.length;
+        int[][] ageScorePair = new int[N][2];
+
+        for (int i = 0; i < N; i++) {
             ageScorePair[i][0] = ages[i];
             ageScorePair[i][1] = scores[i];
         }
 
         // Sort in ascending order of age and then by score.
         Arrays.sort(ageScorePair, (a,b) -> a[0] == b[0] ? a[1]-b[1] : a[0]-b[0]);
-        // Initially, all states are null, denoting not yet calculated.
-        Integer[][] dp = new Integer[n][n];
-
-        return findMaxScore(dp, ageScorePair, -1, 0);
+        return findMaxScore(ageScorePair);
     }
-
-    private int findMaxScore(Integer[][] dp, int[][] ageScorePair, int prev, int index) {
-        // Return 0 if we have iterated over all the players.
-        if (index >= ageScorePair.length) {
-            return 0;
-        }
-
-        // We have already calculated the answer, so no need to go into recursion.
-        if (dp[prev + 1][index] != null) {
-            return dp[prev + 1][index];
-        }
-
-        // If we can add this player, return the maximum of two choices we have.
-        if (prev == -1 || ageScorePair[index][1] >= ageScorePair[prev][1]) {
-            return dp[prev + 1][index] = Math.max(findMaxScore(dp, ageScorePair, prev, index + 1),
-                    ageScorePair[index][1] + findMaxScore(dp, ageScorePair, index, index + 1));
-        }
-
-        // This player cannot be added; return the corresponding score.
-        return dp[prev + 1][index] = findMaxScore(dp, ageScorePair, prev, index + 1);
-    }
-
 }
