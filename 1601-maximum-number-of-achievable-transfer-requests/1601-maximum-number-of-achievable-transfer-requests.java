@@ -1,27 +1,36 @@
 class Solution {
-  public int maximumRequests(int n, int[][] requests) {
-    dfs(0, 0, requests, new int[n]);
+    int answer = 0;
 
-    return ans;
-  }
-
-  private int ans = 0;
-
-  private void dfs(int i, int processedReqs, int[][] requests, int[] degree) {
-    if (i == requests.length) {
-      if (Arrays.stream(degree).allMatch(d -> d == 0))
-        ans = Math.max(ans, processedReqs);
-      return;
+    void maxRequest(int[][] requests, int[] indegree, int n, int index, int count) {
+        if (index == requests.length) {
+            // Check if all buildings have an in-degree of 0.
+            for (int i = 0; i < n; i++) {
+                if (indegree[i] != 0) {
+                    return;
+                }
+            }
+            
+            answer = Math.max(answer, count);
+            return;
+        }
+        
+        // Consider this request, increment and decrement for the buildings involved.
+        indegree[requests[index][0]]--;
+        indegree[requests[index][1]]++;
+        // Move on to the next request and also increment the count of requests.
+        maxRequest(requests, indegree, n, index + 1, count + 1);
+        // Backtrack to the previous values to move back to the original state before the second recursion.
+        indegree[requests[index][0]]++;
+        indegree[requests[index][1]]--;
+        
+        // Ignore this request and move on to the next request without incrementing the count.
+        maxRequest(requests, indegree, n, index + 1, count);
     }
-
-    // Skip requests[i]
-    dfs(i + 1, processedReqs, requests, degree);
-
-    // Process requests[i]
-    --degree[requests[i][0]];
-    ++degree[requests[i][1]];
-    dfs(i + 1, processedReqs + 1, requests, degree);
-    --degree[requests[i][1]];
-    ++degree[requests[i][0]];
-  }
+    
+    public int maximumRequests(int n, int[][] requests) {
+        int[] indegree = new int[n];
+        maxRequest(requests, indegree, n, 0, 0);
+        
+        return answer;
+    }
 }
